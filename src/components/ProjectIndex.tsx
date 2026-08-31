@@ -1,3 +1,4 @@
+import { ExternalLink } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -84,9 +85,10 @@ export default function ProjectIndex() {
                   href={project.repoUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-block mt-3.5 font-mono text-[11px] text-gold-soft border-b border-gold-soft pb-px"
+                  className="inline-flex items-center gap-1.5 mt-3.5 font-mono text-[11px] text-gold-soft border-b border-gold-soft pb-px"
                 >
-                  View repository →
+                  View repository
+                  <ExternalLink size={11} strokeWidth={1.5} />
                 </a>
               )}
             </div>

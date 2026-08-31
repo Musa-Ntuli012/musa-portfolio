@@ -10,10 +10,12 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
+import { LogOut, Pencil, Plus, Save, Trash2 } from 'lucide-react'
 import { db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import { seedProjects } from '../lib/seedProjects'
-import type { Project, ProjectRole } from '../lib/types'
+import { useSiteContent } from '../lib/useSiteContent'
+import type { Project, ProjectRole, SiteContent } from '../lib/types'
 
 const emptyForm = {
   name: '',
@@ -27,12 +29,40 @@ const emptyForm = {
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth()
+  const [tab, setTab] = useState<'projects' | 'content'>('projects')
   const [projects, setProjects] = useState<Project[]>([])
   const [loaded, setLoaded] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState('')
+
+  const liveContent = useSiteContent()
+  const [contentForm, setContentForm] = useState<SiteContent>(liveContent)
+  const [contentHydrated, setContentHydrated] = useState(false)
+  const [savingContent, setSavingContent] = useState(false)
+  const [contentNotice, setContentNotice] = useState('')
+
+  useEffect(() => {
+    if (!contentHydrated) {
+      setContentForm(liveContent)
+      setContentHydrated(true)
+    }
+  }, [liveContent, contentHydrated])
+
+  async function handleSaveContent(e: FormEvent) {
+    e.preventDefault()
+    setSavingContent(true)
+    setContentNotice('')
+    try {
+      await setDoc(doc(db, 'site', 'content'), contentForm)
+      setContentNotice('Site content updated.')
+    } catch {
+      setContentNotice('Could not save. Check your connection and Firestore rules.')
+    } finally {
+      setSavingContent(false)
+    }
+  }
 
   useEffect(() => {
     const q = query(collection(db, 'projects'), orderBy('order', 'asc'))
@@ -130,13 +160,34 @@ export default function AdminDashboard() {
           <span className="font-mono text-xs text-muted">{user?.email}</span>
           <button
             onClick={() => logout()}
-            className="font-mono text-xs tracking-[0.06em] uppercase text-muted border border-line px-4 py-2 hover:text-bone hover:border-bone transition-colors"
+            className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.06em] uppercase text-muted border border-line px-4 py-2 hover:text-bone hover:border-bone transition-colors"
           >
+            <LogOut size={13} strokeWidth={1.5} />
             Sign out
           </button>
         </div>
       </header>
 
+      <div className="max-w-5xl mx-auto px-8 pt-8 flex gap-2">
+        <button
+          onClick={() => setTab('projects')}
+          className={`font-mono text-xs tracking-[0.06em] uppercase px-4 py-2 border ${
+            tab === 'projects' ? 'border-gold-soft text-gold-soft' : 'border-line text-muted hover:text-bone'
+          } transition-colors`}
+        >
+          Projects
+        </button>
+        <button
+          onClick={() => setTab('content')}
+          className={`font-mono text-xs tracking-[0.06em] uppercase px-4 py-2 border ${
+            tab === 'content' ? 'border-gold-soft text-gold-soft' : 'border-line text-muted hover:text-bone'
+          } transition-colors`}
+        >
+          Site content
+        </button>
+      </div>
+
+      {tab === 'projects' ? (
       <div className="max-w-5xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
         <div>
           <div className="flex items-center justify-between mb-6">
@@ -163,14 +214,16 @@ export default function AdminDashboard() {
                 <div className="flex gap-2 shrink-0">
                   <button
                     onClick={() => startEdit(project)}
-                    className="font-mono text-[11px] uppercase tracking-[0.05em] text-gold-soft border border-line px-3 py-2 hover:border-gold-soft transition-colors"
+                    className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.05em] text-gold-soft border border-line px-3 py-2 hover:border-gold-soft transition-colors"
                   >
+                    <Pencil size={12} strokeWidth={1.5} />
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(project.id)}
-                    className="font-mono text-[11px] uppercase tracking-[0.05em] text-red-400 border border-line px-3 py-2 hover:border-red-400 transition-colors"
+                    className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.05em] text-red-400 border border-line px-3 py-2 hover:border-red-400 transition-colors"
                   >
+                    <Trash2 size={12} strokeWidth={1.5} />
                     Delete
                   </button>
                 </div>
@@ -254,8 +307,9 @@ export default function AdminDashboard() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 font-mono text-xs tracking-[0.06em] uppercase text-charcoal bg-gold-soft px-4 py-3 hover:bg-gold transition-colors disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-2 font-mono text-xs tracking-[0.06em] uppercase text-ink bg-gold-fill px-4 py-3 hover:opacity-90 transition-colors disabled:opacity-50"
             >
+              {!saving && (editingId ? <Pencil size={13} strokeWidth={1.5} /> : <Plus size={13} strokeWidth={1.5} />)}
               {saving ? 'Saving…' : editingId ? 'Save changes' : 'Add project'}
             </button>
             {editingId && (
@@ -270,6 +324,57 @@ export default function AdminDashboard() {
           </div>
         </form>
       </div>
+      ) : (
+        <div className="max-w-2xl mx-auto px-8 py-12">
+          <form onSubmit={handleSaveContent} className="border border-line p-6">
+            <h3 className="font-serif text-xl text-bone mb-1">Site content</h3>
+            <p className="font-mono text-xs text-muted mb-6">
+              Edits the hero tagline, about paragraphs, and contact intro on the public site.
+            </p>
+
+            <label className="block font-mono text-[11px] uppercase tracking-[0.05em] text-muted mb-1.5">
+              Hero tagline
+            </label>
+            <textarea
+              value={contentForm.heroTagline}
+              onChange={(e) => setContentForm({ ...contentForm, heroTagline: e.target.value })}
+              rows={3}
+              className="w-full bg-charcoal border border-line px-3 py-2.5 mb-5 text-bone font-mono text-sm focus:border-gold outline-none"
+            />
+
+            <label className="block font-mono text-[11px] uppercase tracking-[0.05em] text-muted mb-1.5">
+              About body (blank line between paragraphs)
+            </label>
+            <textarea
+              value={contentForm.aboutBody}
+              onChange={(e) => setContentForm({ ...contentForm, aboutBody: e.target.value })}
+              rows={10}
+              className="w-full bg-charcoal border border-line px-3 py-2.5 mb-5 text-bone font-sans text-sm focus:border-gold outline-none"
+            />
+
+            <label className="block font-mono text-[11px] uppercase tracking-[0.05em] text-muted mb-1.5">
+              Contact intro
+            </label>
+            <textarea
+              value={contentForm.contactLead}
+              onChange={(e) => setContentForm({ ...contentForm, contactLead: e.target.value })}
+              rows={3}
+              className="w-full bg-charcoal border border-line px-3 py-2.5 mb-6 text-bone font-sans text-sm focus:border-gold outline-none"
+            />
+
+            {contentNotice && <p className="font-mono text-xs text-gold-soft mb-4">{contentNotice}</p>}
+
+            <button
+              type="submit"
+              disabled={savingContent}
+              className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.06em] uppercase text-ink bg-gold-fill px-5 py-3 hover:opacity-90 transition-colors disabled:opacity-50"
+            >
+              <Save size={13} strokeWidth={1.5} />
+              {savingContent ? 'Saving…' : 'Save site content'}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   )
 }

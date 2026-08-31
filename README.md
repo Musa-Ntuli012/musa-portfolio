@@ -1,4 +1,4 @@
-# Musa Ntuli Portfolio
+# Musa Ntuli — Portfolio
 
 Vite + React + TypeScript + Tailwind, with Firebase Auth and Firestore
 powering an admin panel for project CRUD, and a CV page with an
@@ -7,8 +7,21 @@ embedded viewer and download button.
 ## Design system
 
 Cormorant Garamond (display), Montserrat (body), DM Mono (labels and
-data), on a dark charcoal and gold palette, no border radius, no drop
-shadows. Same tokens as the Kyvrex studio site.
+data), no border radius, no drop shadows. Same tokens as the Kyvrex
+studio site.
+
+Light and dark are both built in and switch automatically with the
+visitor's device setting (`prefers-color-scheme`), no toggle and no
+stored preference. All colour is driven by CSS variables in
+`src/index.css`, so the dark palette is the same one from the first
+draft and the light palette was built to keep contrast readable
+against a cream background (the raw gold accent gets deepened to a
+bronze in light mode for that reason, solid gold buttons stay a fixed
+colour with fixed dark text in both modes).
+
+Icons throughout (contact methods, repo links, admin actions, CV
+download) come from `lucide-react`, thin stroke, no fill, matching the
+rest of the type driven aesthetic.
 
 ## Setup
 
@@ -39,9 +52,16 @@ shadows. Same tokens as the Kyvrex studio site.
    npm run dev
    ```
 
-7. Sign in at `/admin/login`, then click "Load starter projects" once
-   to seed Firestore with the seven projects already on the site. From
-   then on, add, edit, and delete projects from `/admin`.
+7. Sign in at `/admin/login` (also reachable from a small "Admin" link
+   in the site footer), then click "Load starter projects" once to
+   seed Firestore with the seven projects already on the site. From
+   then on:
+   - **Projects tab** — add, edit, delete, and reorder projects, all
+     live in Firestore
+   - **Site content tab** — edit the hero tagline, the three about
+     paragraphs, and the contact intro line, also live in Firestore,
+     with a sensible fallback baked in if that document does not
+     exist yet
 
 ## The CV box
 

@@ -1,3 +1,6 @@
+// @ts-ignore
+import { Mail } from 'lucide-react'
+
 export default function KyvrexBand() {
   return (
     <div id="kyvrex" className="border-t border-line bg-charcoal-deep py-28">
@@ -14,7 +17,8 @@ export default function KyvrexBand() {
             href="mailto:musantuli004@gmail.com"
             className="inline-flex items-center gap-2.5 mt-5 font-mono text-xs tracking-[0.06em] uppercase text-gold-soft border-b border-gold-soft pb-0.5"
           >
-            Start a project →
+            <Mail size={13} strokeWidth={1.5} />
+            Start a project
           </a>
         </div>
       </div>

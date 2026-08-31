@@ -2,20 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light theme (default). Automatically swaps for users whose device is
+   set to dark, via the prefers-color-scheme media query below — no
+   toggle, no JS, no stored preference. */
+:root {
+  --color-bg: 244 239 230;
+  --color-bg-deep: 233 225 209;
+  --color-text: 28 26 23;
+  --color-text-dim: 70 65 58;
+  --color-muted: 117 111 97;
+  --color-line: 222 214 195;
+  --color-accent: 138 100 35;
+  --color-accent-soft: 166 124 46;
+  --color-accent-fill: 201 162 75;
+  --color-ink: 20 18 15;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: 26 24 22;
+    --color-bg-deep: 16 15 14;
+    --color-text: 242 237 228;
+    --color-text-dim: 216 210 196;
+    --color-muted: 140 133 120;
+    --color-line: 58 54 47;
+    --color-accent: 201 162 75;
+    --color-accent-soft: 227 201 136;
+    --color-accent-fill: 201 162 75;
+    --color-ink: 16 15 14;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
 
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 ::selection {
-  background: #c9a24b;
-  color: #100f0e;
+  background: rgb(var(--color-accent-fill));
+  color: rgb(var(--color-ink));
 }
 
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
-textarea:focus-visible {
-  outline: 1px solid #c9a24b;
+textarea:focus-visible,
+select:focus-visible {
+  outline: 1px solid rgb(var(--color-accent));
   outline-offset: 4px;
 }
 

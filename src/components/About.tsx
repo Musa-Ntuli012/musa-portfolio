@@ -1,4 +1,9 @@
+import { useSiteContent } from '../lib/useSiteContent'
+
 export default function About() {
+  const { aboutBody } = useSiteContent()
+  const paragraphs = aboutBody.split('\n\n').filter(Boolean)
+
   return (
     <section id="about" className="py-28 border-t border-line">
       <div className="flex items-baseline justify-between gap-6 flex-wrap mb-14">
@@ -26,24 +31,9 @@ export default function About() {
           </div>
         </div>
         <div className="flex flex-col gap-5 text-[17px] text-bone-dim font-light max-w-xl">
-          <p>
-            I am a <strong className="text-bone font-medium">full stack software developer</strong> who builds
-            systems that hold up under real use, not just in a demo. I work comfortably across{' '}
-            <strong className="text-bone font-medium">C# / ASP.NET Core</strong> and{' '}
-            <strong className="text-bone font-medium">JavaScript / TypeScript</strong>, from relational schemas
-            and secure APIs through to the interface on top.
-          </p>
-          <p>
-            I graduated with distinction from Varsity College Pretoria with a{' '}
-            <strong className="text-bone font-medium">BCAD in Computer Science and Information Technology</strong>,
-            application development specialisation, and hold a{' '}
-            <strong className="text-bone font-medium">Foundational C# Microsoft Certification</strong>.
-          </p>
-          <p>
-            In 2026 I registered <strong className="text-bone font-medium">Kyvrex</strong>, a solo software
-            studio based in Pretoria, and I am currently looking for a team where I can keep building real,
-            reliable software.
-          </p>
+          {paragraphs.map((para, i) => (
+            <p key={i}>{para}</p>
+          ))}
         </div>
       </div>
     </section>

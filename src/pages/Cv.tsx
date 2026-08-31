@@ -1,3 +1,4 @@
+import { Download } from 'lucide-react'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 
@@ -18,8 +19,9 @@ export default function Cv() {
           <a
             href={CV_PATH}
             download="Musa_Ntuli_CV.pdf"
-            className="font-mono text-xs tracking-[0.06em] uppercase text-charcoal bg-gold-soft px-5 py-3 hover:bg-gold transition-colors"
+            className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.06em] uppercase text-ink bg-gold-fill px-5 py-3 hover:opacity-90 transition-colors"
           >
+            <Download size={14} strokeWidth={1.5} />
             Download PDF
           </a>
         </div>
